@@ -1,0 +1,6 @@
+# .editorconfig (루트에 위치)
+[*]
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true

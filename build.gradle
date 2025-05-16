@@ -1,17 +1,44 @@
 plugins {
-    id 'java'
-    id 'org.springframework.boot' version '3.4.5'
-    id 'io.spring.dependency-management' version '1.1.7'
-    id "org.sonarqube" version "6.0.1.5171"
+  id 'java'
+  id 'org.springframework.boot' version '3.4.5'
+  id 'io.spring.dependency-management' version '1.1.7'
+  id "org.sonarqube" version "6.0.1.5171"
+  id "com.diffplug.spotless" version "6.25.0"
 
 }
 
+spotless {
+  java {
+    target 'src/**/*.java'
+
+    // 포맷터 설정: Google Java Format or Eclipse
+    googleJavaFormat('1.27.0')
+
+
+    // 불필요한 import 제거
+    removeUnusedImports()
+
+    // import 순서 정리 (기본: 알파벳 순)
+    importOrder()
+
+    // 기타 포맷 설정
+    trimTrailingWhitespace()
+    endWithNewline()
+  }
+
+  format 'misc', {
+    target '*.md', '*.gradle', '*.yml', '*.yaml'
+    trimTrailingWhitespace()
+    endWithNewline()
+  }
+}
+
 sonar {
-    properties {
-        property "sonar.projectKey", "dyno-jun_spring-server-starter"
-        property "sonar.organization", "dyno-jun"
-        property "sonar.host.url", "https://sonarcloud.io"
-    }
+  properties {
+    property "sonar.projectKey", "dyno-jun_spring-server-starter"
+    property "sonar.organization", "dyno-jun"
+    property "sonar.host.url", "https://sonarcloud.io"
+  }
 }
 
 
@@ -19,34 +46,34 @@ group = 'com.dyno'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(17)
+  }
 }
 
 configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
+  compileOnly {
+    extendsFrom annotationProcessor
+  }
 }
 
 repositories {
-    mavenCentral()
+  mavenCentral()
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    runtimeOnly 'com.h2database:h2'
-    runtimeOnly 'org.postgresql:postgresql'
-    annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+  implementation 'org.springframework.boot:spring-boot-starter-security'
+  implementation 'org.springframework.boot:spring-boot-starter-web'
+  compileOnly 'org.projectlombok:lombok'
+  developmentOnly 'org.springframework.boot:spring-boot-devtools'
+  runtimeOnly 'com.h2database:h2'
+  runtimeOnly 'org.postgresql:postgresql'
+  annotationProcessor 'org.projectlombok:lombok'
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
+  testImplementation 'org.springframework.security:spring-security-test'
+  testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
-    useJUnitPlatform()
+  useJUnitPlatform()
 }
