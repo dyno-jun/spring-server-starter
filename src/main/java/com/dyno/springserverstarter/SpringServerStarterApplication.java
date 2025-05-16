@@ -9,5 +9,3 @@ public class SpringServerStarterApplication {
     SpringApplication.run(SpringServerStarterApplication.class, args);
   }
 }
-
-
