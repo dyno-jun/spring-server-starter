@@ -36,7 +36,7 @@ chore: 빌드/테스트 설정 변경
 
 ### 2.4 정적 분석 도구
 
-- SonarQube
+- SonarCloud 활용
 
 ### 2.5 CI/CD
 
