@@ -5,6 +5,11 @@
 ## 1. 프레임워크 선정
 - **Spring Boot**
 
+### 1.1. IDE 설정
+- plugin
+- sonaqube for ide
+
+
 ## 2. 개발 컨벤션
 
 ### 2.1 코드리뷰
