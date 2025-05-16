@@ -3,30 +3,25 @@ name: Release
 on:
   push:
     branches:
-      - main
+      - main # main에 push가 됐을 때 실행
 
 jobs:
   release:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
         with:
-          persist-credentials: false
-      - name: Set up Git identity
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          persist-credentials: false # 기본 깃헙 토큰 제거. false를 안하면 에러 발생....
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: 18
 
-      - name: Install semantic-release
-        run: npm install -g semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/github
+      - name: Install dependencies
+        run: npm ci
 
       - name: Run semantic-release
         env:
-          GITHUB_TOKEN: ${{ secrets.DYNO_TOKEN }}  # 개인 PAT으로 등록한 시크릿
-        run: semantic-release
+          GITHUB_TOKEN: ${{ secrets.DYNO_TOKEN }} # 리포지터리 설정에 저장해둔 secrets로 깃헙 토큰 설정
+        run: npx semantic-release # CI 환경에서(깃헙액션 호스트) 자동화 실행
