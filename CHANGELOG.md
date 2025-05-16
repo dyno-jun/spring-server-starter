@@ -1,3 +1,9 @@
+## [1.5.0](https://github.com/dyno-jun/spring-server-starter/compare/v1.4.0...v1.5.0) (2025-05-16)
+
+### Features
+
+* 봇 제거 ([643bc1a](https://github.com/dyno-jun/spring-server-starter/commit/643bc1a53c4458d439955fe5d842ff6c99f91165))
+
 ## [1.4.0](https://github.com/dyno-jun/spring-server-starter/compare/v1.3.0...v1.4.0) (2025-05-16)
 
 ### Features
