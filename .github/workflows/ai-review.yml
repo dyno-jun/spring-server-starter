@@ -38,20 +38,20 @@ jobs:
           echo "head_sha=$(echo $PR_JSON | jq -r .head.sha)" >> $GITHUB_OUTPUT
           echo "base_sha=$(echo $PR_JSON | jq -r .base.sha)" >> $GITHUB_OUTPUT
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.DYNO_TOKEN }}
 
       - name: Run Gemini AI Code Review
         id: ai_review
         uses: team-devOops/gemini-ai-code-reviewer@main
         with:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.DYNO_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: gemini-2.0-flash-001
           EXCLUDE: "*.md,*.txt,package-lock.json,*.yml,*.yaml"
 
       - name: Comment on PR with Review Result
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.DYNO_TOKEN }}
         run: |
           if [ -f ./gemini-review-result.md ]; then
             COMMENT_BODY=$(cat ./gemini-review-result.md)

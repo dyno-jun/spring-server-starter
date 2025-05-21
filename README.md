@@ -5,10 +5,8 @@
 ## 시작하기
 
 ```angular2html
-./pre-commit.sh
+./gradlew initGitHooks
 ```
-
-이 스크립트는 다음을 자동으로 수행합니다:
 
 - pre-commit Git 훅을 .git/hooks/pre-commit에 등록합니다.
 - Java 파일 커밋 시, 자동으로 코드 포맷(spotlessApply)을 실행합니다.
