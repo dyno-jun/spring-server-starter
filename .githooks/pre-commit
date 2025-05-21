@@ -3,7 +3,7 @@ set -e
 
 echo "▶ 스테이지된 Java 파일만 spotlessApply 실행 중..."
 
-# Spotless 실행 대상: 스테이징된 Java 파일
+# 1. 현재 스테이지에 올라간 파일 목록만 추출
 files=$(git diff --cached --name-only --diff-filter=ACM | grep '\.java$' || true)
 
 if [ -z "$files" ]; then
@@ -11,21 +11,13 @@ if [ -z "$files" ]; then
   exit 0
 fi
 
-# 전체 spotless 실행
+# 2. Spotless는 지정된 파일만 직접 지정 불가 → 대신 전체 실행 후, 수정된 파일 중 대상만 git add
 ./gradlew spotlessApply --quiet
 
-# 실제 변경된 Java 파일 중, 스테이지에 있었던 파일만 다시 add
-modified_files=$(git diff --name-only | grep '\.java$' || true)
-
 echo "▶ 다시 git add 중..."
-echo "$files" | while read -r file; do
-  echo "$modified_files" | grep -q "^$file$" && git add "$file"
-done
+echo "$files" | xargs git add
 
 echo "▶ spotlessCheck 실행 중..."
-if ! ./gradlew spotlessCheck --quiet; then
-  echo "❌ Spotless check에 실패했습니다. 코드 포맷을 확인해주세요."
-  exit 1
-fi
+./gradlew spotlessCheck --quiet
 
 echo "✅ 포맷 완료. 커밋 진행 가능!"
