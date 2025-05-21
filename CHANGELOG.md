@@ -1,3 +1,10 @@
+## [1.7.0](https://github.com/dyno-jun/spring-server-starter/compare/v1.6.0...v1.7.0) (2025-05-21)
+
+### Features
+
+* test ([37cdd9c](https://github.com/dyno-jun/spring-server-starter/commit/37cdd9c48a059033d7ab9a5934be79e21a82e919))
+* Todo 삭제 ([ccec1c2](https://github.com/dyno-jun/spring-server-starter/commit/ccec1c2422a5908d77d17a6afbbd7c5e1f89e383))
+
 ## [1.6.0](https://github.com/dyno-jun/spring-server-starter/compare/v1.5.0...v1.6.0) (2025-05-21)
 
 ### Features
