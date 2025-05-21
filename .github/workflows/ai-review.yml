@@ -4,7 +4,9 @@ on:
   issue_comment:
     types: [ created ]
 
-permissions: write-all
+permissions:
+  pull-requests: write
+  contents: read
 
 jobs:
   gemini-code-review:
@@ -13,6 +15,11 @@ jobs:
       github.event.issue.pull_request &&
       contains(github.event.comment.body, '/ai-review')
     steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gh jq
+
       - name: PR Info
         run: |
           echo "Comment: ${{ github.event.comment.body }}"
@@ -33,9 +40,24 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: team-devOops/gemini-ai-code-reviewer@main
+      - name: Run Gemini AI Code Review
+        id: ai_review
+        uses: team-devOops/gemini-ai-code-reviewer@main
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_MODEL: gemini-2.0-flash-001 # Optional, default is `gemini-1.5-flash-002`
+          GEMINI_MODEL: gemini-2.0-flash-001
           EXCLUDE: "*.md,*.txt,package-lock.json,*.yml,*.yaml"
+
+      - name: Comment on PR with Review Result
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          if [ -f ./gemini-review-result.md ]; then
+            COMMENT_BODY=$(cat ./gemini-review-result.md)
+          else
+            COMMENT_BODY="✅ Gemini 리뷰가 완료되었습니다. (결과 파일 없음)"
+          fi
+
+          gh api repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments \
+            -f body="$COMMENT_BODY"
