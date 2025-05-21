@@ -1,10 +1,10 @@
-name: SonarQube
+name: CI
 on:
   push:
     branches:
       - main
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [ opened, synchronize, reopened ]
 jobs:
   build:
     name: Build and analyze
@@ -34,3 +34,32 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew build sonar --info
+
+      - name: Run Spotless Check
+        run: ./gradlew spotlessCheck
+      - name: Run Tests
+        run: ./gradlew test
+      - name: Generate JaCoCo Report
+        run: ./gradlew jacocoTestReport
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: build/test-results/test
+      - name: Upload Code Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage-report
+          path: build/reports/jacoco/test/html
+      - name: Add coverage to PR
+        uses: madrapps/jacoco-report@v1.7.2
+        with:
+          paths: |
+            ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
+          token: ${{ secrets.DYNO_TOKEN }}
+          #          min-coverage-overall: 80
+          #          min-coverage-changed-files: 80
+          update-comment: true
+          title: 'JaCoCo Coverage Report'
