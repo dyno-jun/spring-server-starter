@@ -1,18 +1,47 @@
 # spring-server-starter
+
 기본 TODO 예제를 통한 스타터
 
+## 시작하기
+
+```angular2html
+./pre-commit.sh
+```
+
+이 스크립트는 다음을 자동으로 수행합니다:
+
+- pre-commit Git 훅을 .git/hooks/pre-commit에 등록합니다.
+- Java 파일 커밋 시, 자동으로 코드 포맷(spotlessApply)을 실행합니다.
+- 포맷된 파일을 다시 스테이징하고, spotlessCheck로 포맷 오류를 검사합니다.
+
+## Lint
+
+```angular2html
+# .editorconfig (루트에 위치)
+root = true
+
+[*]
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+charset = utf-8
+end_of_line = lf
+```
 
 ## 1. 프레임워크 선정
+
 - **Spring Boot**
 
 ### 1.1. IDE 설정
+
 - plugin
 - sonaqube for ide
-
 
 ## 2. 개발 컨벤션
 
 ### 2.1 코드리뷰
+
 - PR 템플릿, 이슈 템플릿 추가
 - PR 단위: 기능 단위, 200줄 이하 권장
 - Reviewer: 최소 1인 이상 승인 필요
@@ -21,8 +50,12 @@
 ### 2.2  템플릿
 
 ```jsx
-커밋 메세지 포맷
-AI 커밋 활용
+커밋
+메세지
+포맷
+AI
+커밋
+활용
 ```
 
 ```
@@ -55,9 +88,11 @@ sonar {
   }
 }
 ```
+
 ### 2.5 CI/CD
 
 - gitAction 활용
+
 ```
 name: SonarQube
 on:
@@ -96,29 +131,32 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew build sonar --info
 ```
+
 ### 2.6 문서 작성
 
 - **README**: 프로젝트 소개, 실행 방법, 주요 구조
 - **CHANGELOG**: 버전별 변경사항 기록
 
 ### 2.7 아키텍처 정의
+
 - 레이어 구조
-    - Layered Architecture
-    - Hexagonal Architecture
+  - Layered Architecture
+  - Hexagonal Architecture
 
 ## 3. API 문서화
 
 - RestDoc
-    - 테스트 코드 별도로 작성해야 문서 생성됨.
+  - 테스트 코드 별도로 작성해야 문서 생성됨.
 - **Swagger (SpringDoc/OpenAPI)**
-    - 자동 문서화, 개발 중 확인 용이
+  - 자동 문서화, 개발 중 확인 용이
 - **Postman**
-    - 테스트 시나리오 저장, 협업 공유 용이
+  - 테스트 시나리오 저장, 협업 공유 용이
 
 ## 4. 인프라
+
 - AWS 활용
-    - 컨테이너 기반
-    - ECS or Lambda
+  - 컨테이너 기반
+  - ECS or Lambda
 - IaC: Terraform
 
 ## 5. 테스트 전략

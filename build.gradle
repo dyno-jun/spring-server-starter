@@ -3,24 +3,18 @@ plugins {
   id 'org.springframework.boot' version '3.4.5'
   id 'io.spring.dependency-management' version '1.1.7'
   id "org.sonarqube" version "6.0.1.5171"
-  id "com.diffplug.spotless" version "6.25.0"
-
+  id "com.diffplug.spotless" version "7.0.3"
 }
 
 spotless {
   java {
     target 'src/**/*.java'
-
     // 포맷터 설정: Google Java Format or Eclipse
     googleJavaFormat('1.27.0')
-
-
     // 불필요한 import 제거
     removeUnusedImports()
-
     // import 순서 정리 (기본: 알파벳 순)
     importOrder()
-
     // 기타 포맷 설정
     trimTrailingWhitespace()
     endWithNewline()
@@ -76,4 +70,26 @@ dependencies {
 
 tasks.named('test') {
   useJUnitPlatform()
+}
+
+tasks.register('initGitHooks', Copy) {
+  from("$rootDir/.githooks") {
+    include 'pre-commit'
+    rename 'pre-commit', 'pre-commit'
+  }
+  into "$rootDir/.git/hooks"
+
+  doLast {
+    def hookFile = file("$rootDir/.git/hooks/pre-commit")
+    if (hookFile.exists()) {
+      hookFile.setExecutable(true)
+      println "✅ pre-commit hook 설치 완료: ${hookFile.path}"
+    } else {
+      println "❌ pre-commit hook 파일이 존재하지 않습니다."
+    }
+  }
+}
+
+tasks.named("clean") {
+  dependsOn("initGitHooks")
 }

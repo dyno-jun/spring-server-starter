@@ -1,0 +1,31 @@
+#!/bin/sh
+set -e
+
+echo "▶ 스테이지된 Java 파일만 spotlessApply 실행 중..."
+
+# Spotless 실행 대상: 스테이징된 Java 파일
+files=$(git diff --cached --name-only --diff-filter=ACM | grep '\.java$' || true)
+
+if [ -z "$files" ]; then
+  echo "✅ 포맷할 Java 파일이 없습니다. 커밋을 진행합니다."
+  exit 0
+fi
+
+# 전체 spotless 실행
+./gradlew spotlessApply --quiet
+
+# 실제 변경된 Java 파일 중, 스테이지에 있었던 파일만 다시 add
+modified_files=$(git diff --name-only | grep '\.java$' || true)
+
+echo "▶ 다시 git add 중..."
+echo "$files" | while read -r file; do
+  echo "$modified_files" | grep -q "^$file$" && git add "$file"
+done
+
+echo "▶ spotlessCheck 실행 중..."
+if ! ./gradlew spotlessCheck --quiet; then
+  echo "❌ Spotless check에 실패했습니다. 코드 포맷을 확인해주세요."
+  exit 1
+fi
+
+echo "✅ 포맷 완료. 커밋 진행 가능!"
