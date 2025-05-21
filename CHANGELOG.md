@@ -1,3 +1,9 @@
+## [1.6.0](https://github.com/dyno-jun/spring-server-starter/compare/v1.5.0...v1.6.0) (2025-05-21)
+
+### Features
+
+* gradlew bat 추가 ([fa05b48](https://github.com/dyno-jun/spring-server-starter/commit/fa05b48e4e6b4348a4ad2014cb7783978d0e7803))
+
 ## [1.5.0](https://github.com/dyno-jun/spring-server-starter/compare/v1.4.0...v1.5.0) (2025-05-16)
 
 ### Features
