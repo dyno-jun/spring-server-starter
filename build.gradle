@@ -29,10 +29,13 @@ repositories {
 dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-security'
   implementation 'org.springframework.boot:spring-boot-starter-web'
-  compileOnly 'org.projectlombok:lombok'
   developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+  compileOnly 'org.projectlombok:lombok'
+
   runtimeOnly 'com.h2database:h2'
   runtimeOnly 'org.postgresql:postgresql'
+
   annotationProcessor 'org.projectlombok:lombok'
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
   testImplementation 'org.springframework.security:spring-security-test'
@@ -92,16 +95,15 @@ sonar {
     property "sonar.projectKey", "dyno-jun_spring-server-starter"
     property "sonar.organization", "dyno-jun"
     property "sonar.host.url", "https://sonarcloud.io"
-    property "sonar.coverage.jacoco.xmlReportPaths", file("build/reports/jacoco/test/jacocoTestReport.xml").path
   }
 }
 
 jacoco {
-  toolVersion = "0.8.11" // 최신 버전 확인 가능
+  toolVersion = "0.8.11"
 }
 
 jacocoTestReport {
-  dependsOn test // 테스트 이후 실행되도록 설정
+  dependsOn test
 
   reports {
     xml.required = true
