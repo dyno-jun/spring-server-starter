@@ -1,83 +1,73 @@
 # spring-server-starter
 
-기본 TODO 예제를 통한 스타터
+Spring Boot 기반 백엔드 프로젝트 템플릿입니다.
+코드 포맷팅, 정적 분석, Git Hook, 테스트 커버리지, 자동 릴리스/배포까지 포함된 CI/CD + 코드 품질 관리 기반의 스타터 프로젝트입니다.
 
-## 시작하기
+---
 
-```angular2html
-./gradlew initGitHooks
+## 🛠️ 시작하기
+
+```bash
+./gradlew clean build
 ```
 
-- pre-commit Git 훅을 .git/hooks/pre-commit에 등록합니다.
-- Java 파일 커밋 시, 자동으로 코드 포맷(spotlessApply)을 실행합니다.
-- 포맷된 파일을 다시 스테이징하고, spotlessCheck로 포맷 오류를 검사합니다.
+> `clean` 시 자동으로 Git hook(`pre-commit`)이 `.git/hooks/`에 설치됩니다.
 
-## Lint
+---
 
-```angular2html
-# .editorconfig (루트에 위치)
-root = true
+## 📁 템플릿 구성
 
-[*]
-indent_style = space
-indent_size = 2
-insert_final_newline = true
-trim_trailing_whitespace = true
-charset = utf-8
-end_of_line = lf
+### 이슈 템플릿
+
+- Bug Report
+- Feature Request
+
+### PR 템플릿
+
+- 제목: `feat:`, `fix:`, `chore:` 등 prefix 사용
+- 본문: 관련 이슈 링크 포함
+
+---
+
+## 🧾 커밋 메시지 규칙 (Conventional Commits)
+
+- `feat`: 새로운 기능
+- `fix`: 버그 수정
+- `chore`: 설정, 빌드, 의존성 등 비기능성 작업
+- `docs`: 문서 수정
+- `test`: 테스트 코드 추가/변경
+- `refactor`: 리팩토링 (기능 변경 없음)
+
+**예시:**
+
+```bash
+git commit -m "feat: 사용자 로그인 API 구현"
+git commit -m "fix: 로그인 실패 시 예외 메시지 수정"
 ```
 
-## 1. 프레임워크 선정
+## ✅ 코드 린트 (Lint) - Spotless
 
-- **Spring Boot**
-
-### 1.1. IDE 설정
-
-- plugin
-- sonaqube for ide
-
-## 2. 개발 컨벤션
-
-### 2.1 코드리뷰
-
-- PR 템플릿, 이슈 템플릿 추가
-- PR 단위: 기능 단위, 200줄 이하 권장
-- Reviewer: 최소 1인 이상 승인 필요
-- 리뷰 체크리스트 활용 (예: 로직 오류, 스타일, 네이밍)
-
-### 2.2  템플릿
-
-```jsx
-커밋
-메세지
-포맷
-AI
-커밋
-활용
+```bash
+./gradlew spotlessApply
+./gradlew spotlessCheck
 ```
 
-```
-feat: 새로운 기능 추가
-fix: 버그 수정
-refactor: 리팩토링
-style: 코드 스타일 변경 (공백, 세미콜론 등)
-chore: 빌드/테스트 설정 변경
-```
+- `googleJavaFormat 1.27.0` 사용
+- 불필요한 import 제거
+- import 정렬 (알파벳 순)
+- 줄 끝 공백 제거
+- 마지막 줄 개행 추가
 
-### 2.3 린트 & 포맷터& IDE
+**적용 대상:**
 
-- Java: Checkstyle, Spotless, Google java lint
-- kotlin: Spotless
+- Java: `src/**/*.java`
+- 기타: `.md`, `.gradle`, `.yml`, `.yaml`
 
-### 2.4 정적 분석 도구
+---
 
-- SonarCloud 활용
+## 🔍 정적 분석 도구 - SonarCloud
 
-```
-plugins {
-  id "org.sonarqube" version "6.0.1.5171"
-}
-
+```groovy
 sonar {
   properties {
     property "sonar.projectKey", "dyno-jun_spring-server-starter"
@@ -87,88 +77,48 @@ sonar {
 }
 ```
 
-### 2.5 CI/CD
+> GitHub Actions 또는 수동 실행으로 SonarCloud 연동 가능
 
-- gitAction 활용
+---
 
-```
-name: SonarQube
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    types: [opened, synchronize, reopened]
-jobs:
-  build:
-    name: Build and analyze
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: 17
-          distribution: 'zulu' # Alternative distribution options are available
-      - name: Cache SonarQube packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-      - name: Cache Gradle packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-          restore-keys: ${{ runner.os }}-gradle
-      - name: Build and analyze
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew build sonar --info
+## 📈 테스트 커버리지 - JaCoCo
+
+```bash
+./gradlew jacocoTestReport
 ```
 
-### 2.6 문서 작성
+- HTML 및 XML 리포트 생성
+- 커버리지는 `build/reports/jacoco/`에서 확인 가능
 
-- **README**: 프로젝트 소개, 실행 방법, 주요 구조
-- **CHANGELOG**: 버전별 변경사항 기록
+---
 
-### 2.7 아키텍처 정의
+## ⚙️ CI 구성
 
-- 레이어 구조
-  - Layered Architecture
-  - Hexagonal Architecture
+- PR 생성 및 `main` 브랜치 푸시 시 CI 실행
+- 테스트, 린트, 정적 분석 자동 수행
+- GitHub Actions 기반
 
-## 3. API 문서화
+---
 
-- RestDoc
-  - 테스트 코드 별도로 작성해야 문서 생성됨.
-- **Swagger (SpringDoc/OpenAPI)**
-  - 자동 문서화, 개발 중 확인 용이
-- **Postman**
-  - 테스트 시나리오 저장, 협업 공유 용이
+## 🤖 AI 코드 리뷰
 
-## 4. 인프라
+- PR 생성 시 자동 리뷰
+- AI 기반으로 코드 스타일 및 설계 관점 피드백 예정
 
-- AWS 활용
-  - 컨테이너 기반
-  - ECS or Lambda
-- IaC: Terraform
+---
 
-## 5. 테스트 전략
+## 🚀 릴리즈 (Release) - semantic-release
 
-### 5.1 유틸 함수 테스트
+- `main` 브랜치 푸시 시 semantic-release 실행
+- 커밋 메시지 기반 SemVer 릴리즈 생성
+- `CHANGELOG.md`, `build.gradle`의 버전, GitHub Release 자동 반영
 
-- 단위 테스트로 커버리지 확보
-- 로직이 복잡한 경우 TDD 방식 적용
+---
 
-### 5.2 비즈니스 로직 테스트
+## 🛳️ 배포 (CD) - GitHub Actions → ECS
 
-- Service 단위 테스트 (Mocking Repository)
+- `dyno-v*.*.*` 형태의 태그 푸시 시 ECS로 자동 배포
+- GitHub Actions → Amazon ECR → ECS Fargate
+- 배포 완료 시 Slack 알림 전송
 
-### 5.3 도메인 레이어 테스트
-
-- 엔티티 내부 상태 변화 테스트
-- 도메인 이벤트 처리 로직 테스트
+---
