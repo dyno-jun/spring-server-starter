@@ -2,18 +2,14 @@
   "branches": [
     "main"
   ],
-  "tagFormat": "v${version}",
-  "preset": "conventionalcommits",
-  "changelogFile": "CHANGELOG.md",
   "plugins": [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
     "@semantic-release/changelog",
-    "@semantic-release/github",
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "sed -i 's/^version = \\\".*\\\"/version = \\\"${nextRelease.version}\\\"/' build.gradle"
+        "prepareCmd": "sed -i -E \"s/^\\s*version\\s*=\\s*'[^']*'/version = '${nextRelease.version}'/\" build.gradle"
       }
     ],
     [
@@ -23,8 +19,9 @@
           "build.gradle",
           "CHANGELOG.md"
         ],
-        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+        "message": "chore(release): ${nextRelease.version} [skip ci]"
       }
-    ]
+    ],
+    "@semantic-release/github"
   ]
 }
