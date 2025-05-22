@@ -1,3 +1,10 @@
+## [1.9.0](https://github.com/dyno-jun/spring-server-starter/compare/v1.8.0...v1.9.0) (2025-05-22)
+
+### Features
+
+* ci test ([d11600f](https://github.com/dyno-jun/spring-server-starter/commit/d11600f221b885578ec2a71bfcc83c8267d6b314))
+* release.yml 추가 ([3c30760](https://github.com/dyno-jun/spring-server-starter/commit/3c30760da76fb57f183ba8fdd17c7484d36a59d7))
+
 ## [1.8.0](https://github.com/dyno-jun/spring-server-starter/compare/v1.7.0...v1.8.0) (2025-05-21)
 
 ### Features
