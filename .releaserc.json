@@ -11,6 +11,12 @@
     "@semantic-release/changelog",
     "@semantic-release/github",
     [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "sed -i 's/^version = \\\".*\\\"/version = \\\"${nextRelease.version}\\\"/' build.gradle"
+      }
+    ],
+    [
       "@semantic-release/git",
       {
         "assets": [

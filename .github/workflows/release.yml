@@ -25,19 +25,10 @@ jobs:
             @semantic-release/changelog \
             @semantic-release/git \
             @semantic-release/github \
-            conventional-changelog-conventionalcommits
+            conventional-changelog-conventionalcommits \
+            @semantic-release/exec
 
       - name: Run semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.DYNO_TOKEN }}
         run: semantic-release
-
-      - name: Sync Gradle version to semantic-release version
-        run: |
-          VERSION=$(git describe --tags --abbrev=0)
-          sed -i "s/^version = \".*\"/version = \"${VERSION#v}\"/" build.gradle
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add build.gradle
-          git commit -m "chore: sync Gradle version to ${VERSION}"
-          git push origin main
