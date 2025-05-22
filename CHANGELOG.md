@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/dyno-jun/spring-server-starter/compare/v1.9.0...v1.9.1) (2025-05-22)
+
+
+### Bug Fixes
+
+* gradle version ([47ada80](https://github.com/dyno-jun/spring-server-starter/commit/47ada802bd793470f6e5d58c474b83ecb9679359))
+
 ## [1.9.0](https://github.com/dyno-jun/spring-server-starter/compare/v1.8.0...v1.9.0) (2025-05-22)
 
 ### Features
