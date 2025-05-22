@@ -37,4 +37,17 @@ class CalculatorTest {
     int result = calculator.subtract(6, 3);
     assertEquals(3, result, "6 - 3 should equal 3");
   }
+  
+  @Test
+  void testModulus() {
+    int result = calculator.modulus(7, 3);
+    assertEquals(1, result, "7 % 3 should equal 1");
+  }
+  
+  @Test
+  void testModulusByZero() {
+    assertThrows(ArithmeticException.class, () -> {
+      calculator.modulus(7, 0);
+    }, "Modulus by zero should throw ArithmeticException");
+  }
 }
