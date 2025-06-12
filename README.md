@@ -115,7 +115,7 @@ sonar {
 
 ---
 
-## 🛳️ 배포 (CD) - GitHub Actions → ECS
+## 🛳️ 배포 (CD) - GitHub Actions →
 
 - `dyno-v*.*.*` 형태의 태그 푸시 시 ECS로 자동 배포
 - GitHub Actions → Amazon ECR → ECS Fargate
