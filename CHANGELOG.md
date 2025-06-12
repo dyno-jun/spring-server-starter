@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/dyno-jun/spring-server-starter/compare/v1.11.0...v1.12.0) (2025-06-12)
+
+
+### Features
+
+* 테라폼 초안 ([8cc7a34](https://github.com/dyno-jun/spring-server-starter/commit/8cc7a3453d518faa28d2fab3b98e291764d639d5))
+
 # [1.11.0](https://github.com/dyno-jun/spring-server-starter/compare/v1.10.0...v1.11.0) (2025-05-22)
 
 
