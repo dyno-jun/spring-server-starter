@@ -36,4 +36,4 @@ out/
 ### VS Code ###
 .vscode/
 
-/terraform/terraform.tfvars
+/infra/envs/dev/terraform.tfvars

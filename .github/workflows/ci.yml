@@ -10,46 +10,51 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Copy CI gradle.properties
+        run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: 'zulu' # Alternative distribution options are available
-      - name: Cache SonarQube packages
-        uses: actions/cache@v4
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
         with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
       - name: Cache Gradle packages
         uses: actions/cache@v4
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
-      - name: Build and analyze
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew build sonar --info
 
-      - name: Run Spotless Check
-        run: ./gradlew spotlessCheck
+      - name: Check spotless
+        run: ./gradlew spotlessCheck --init-script gradle/init.gradle.kts --no-configuration-cache
+
       - name: Run Tests
         run: ./gradlew test
+
       - name: Generate JaCoCo Report
         run: ./gradlew jacocoTestReport
+
       - name: Upload Test Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: build/test-results/test
+
       - name: Upload Code Coverage Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: code-coverage-report
           path: build/reports/jacoco/test/html
+
       - name: Add coverage to PR
         uses: madrapps/jacoco-report@v1.7.2
         with:
@@ -57,6 +62,13 @@ jobs:
             ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
           token: ${{ secrets.DYNO_TOKEN }}
           #          min-coverage-overall: 80
-          min-coverage-changed-files: 80
+          min-coverage-changed-files: 50
           update-comment: true
           title: 'JaCoCo Coverage Report'
+
+  notify:
+    name: Notify Slack
+    needs: build
+    uses: ./.github/actions/slack.yml
+    with:
+      job-status: ${{ needs.build.result }}

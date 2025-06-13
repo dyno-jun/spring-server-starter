@@ -122,3 +122,18 @@ sonar {
 - 배포 완료 시 Slack 알림 전송
 
 ---
+
+# 🔐 GitHub Actions Secrets Template
+
+이 문서는 이 프로젝트의 CI/CD 및 배포 워크플로우에 필요한 GitHub Secrets 목록을 안내합니다.
+
+| Secret 이름               | 사용 위치              | 설명                              |
+|-------------------------|--------------------|---------------------------------|
+| `SLACK_WEBHOOK`         | `slack.yml`        | Slack 알림을 전송하기 위한 Webhook URL   |
+| `GRADLE_ENCRYPTION_KEY` | `ci.yml`           | Gradle 캐시 암호화용 키                |
+| `DYNO_TOKEN`            | `ci.yml`, `cd.yml` | PR 커버리지 댓글 및 릴리스 생성용 GitHub 토큰  |
+| `ECR_REPO`              | `cd.yml`           | Docker 이미지 푸시 대상 Amazon ECR URI |
+| `AWS_ACCESS_KEY_ID`     | `infra.yml`        | Terraform 배포용 AWS 자격증명          |
+| `AWS_SECRET_ACCESS_KEY` | `infra.yml`        | Terraform 배포용 AWS 자격증명          |
+
+> 모든 Secrets는 GitHub 저장소의 `Settings > Secrets and variables > Actions`에서 등록할 수 있습니다.
