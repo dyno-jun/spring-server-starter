@@ -39,3 +39,7 @@ out/
 /infra/envs/dev/terraform.tfvars
 
 **/.terraform/
+
+# Generated code
+app/src/main/generated/
+app/src/main/resources/static/docs/
