@@ -37,3 +37,5 @@ out/
 .vscode/
 
 /infra/envs/dev/terraform.tfvars
+
+**/.terraform/

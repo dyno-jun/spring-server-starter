@@ -1,67 +1,98 @@
-name: Release and Deploy
+name: Full CI/CD Pipeline
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [ published ]
+  workflow_dispatch:
 
 jobs:
-  release:
-    name: Create Release (via release-please)
+  build-and-deploy:
     runs-on: ubuntu-latest
-    outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
-      tag_name: ${{ steps.release.outputs.tag_name }}
+
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+      ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+      CLUSTER_NAME: ${{ secrets.ECS_CLUSTER }}
+      SERVICE_NAME: ${{ secrets.ECS_SERVICE }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Release Please
-        id: release
-        uses: google-github-actions/release-please-action@v4
+      - name: Setup Java
+        uses: actions/setup-java@v3
         with:
-          release-type: simple
-          package-name: spring-server-starter
-          token: ${{ secrets.DYNO_TOKEN }}
+          distribution: 'temurin'
+          java-version: '17'
 
-  docker:
-    name: Build and Push Docker Image
-    needs: release
-    if: ${{ needs.release.outputs.release_created == 'true' }}
-    runs-on: ubuntu-latest
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Build JAR
+        run: ./gradlew build
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Extract version from tag
+        id: extract_version
+        run: echo "VERSION=${GITHUB_REF##*/}" >> $GITHUB_ENV
 
       - name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build and Push Image to ECR
         run: |
-          TAG=${{ needs.release.outputs.tag_name }}
-          docker build -t ${{ secrets.ECR_REPO }}:$TAG .
-          docker push ${{ secrets.ECR_REPO }}:$TAG
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
 
-  deploy:
-    name: Deploy to ECS
-    needs: docker
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to ECS
+      - name: Build Docker image
         run: |
-          aws ecs update-service \
-            --cluster your-cluster-name \
-            --service your-service-name \
-            --force-new-deployment
+          chmod +x gradlew
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$VERSION ./app
+
+      - name: Push Docker image to ECR
+        run: |
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$VERSION
+
+      - name: Generate final task.json from template
+        run: |
+          envsubst < app/growit-app-task-def.json > app/growit-app-task-def-new.json
+        env:
+          EXECUTION_ROLE_ARN: ${{ secrets.EXECUTION_ROLE_ARN }}
+
+      - name: Render ECS task definition with secrets
+        id: render-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ./app/growit-app-task-def-new.json
+          container-name: growit-app-service
+          image: "${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.VERSION }}"
+          environment-variables: |
+            SPRING_PROFILES_ACTIVE=${{ secrets.SPRING_PROFILES_ACTIVE }}
+            JAVA_OPTS=${{ secrets.JAVA_OPTS }}
+            SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}
+            SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}
+            SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            OTHER_API_KEY=${{ secrets.OTHER_API_KEY }}
+
+
+      - name: Deploy to Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          wait-for-service-stability: false
+          cluster: ${{ env.CLUSTER_NAME }}
+          service: ${{ env.SERVICE_NAME }}
+          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
 
   notify:
     name: Notify Slack
-    needs: deploy
-    uses: ./.github/actions/slack.yml
+    needs: build-and-deploy
+    uses: ./.github/workflows/slack.yml
+
     with:
-      job-status: ${{ needs.build.result }}
+      job-status: ${{ needs.build-and-deploy.result }}
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
