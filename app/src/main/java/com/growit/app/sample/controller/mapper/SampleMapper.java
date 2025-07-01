@@ -9,6 +9,6 @@ public class SampleMapper {
 
   public CreateSampleCommand toCommand(String userId, CreateSampleRequest request) {
     return new CreateSampleCommand(
-        userId, request.getName(), request.getEmial(), request.getDate());
+        userId, request.getName(), request.getEmail(), request.getDate());
   }
 }

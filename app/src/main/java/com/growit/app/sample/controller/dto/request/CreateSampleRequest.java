@@ -17,7 +17,7 @@ public class CreateSampleRequest {
 
   @NotNull(message = "이메일은 필수 입니다.")
   @Valid
-  private String emial;
+  private String email;
 
   @NotNull(message = "날짜는 필수 입니다.")
   @Valid
