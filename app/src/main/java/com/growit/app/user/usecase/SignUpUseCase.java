@@ -1,3 +1,10 @@
 package com.growit.app.user.usecase;
 
-public class SignUpUseCase {}
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+public class SignUpUseCase {
+  public void log() {
+    log.info("SignUpUseCase");
+  }
+}
