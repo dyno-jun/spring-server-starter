@@ -20,7 +20,8 @@ public class SampleController {
   private final SampleMapper mapper;
 
   @PostMapping
-  public ResponseEntity<ApiResponse<IdDto>> createSample(@Valid @RequestBody CreateSampleRequest request) {
+  public ResponseEntity<ApiResponse<IdDto>> createSample(
+      @Valid @RequestBody CreateSampleRequest request) {
     CreateSampleCommand command = mapper.toCommand("userId", request);
     String id = createSampleUseCase.execute(command);
 
